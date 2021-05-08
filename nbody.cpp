@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include <stdio.h>
 #include <string.h>
 #include <iomanip>
@@ -7,9 +6,8 @@
 #include <cmath>
 #include <sys/time.h>
 #include <fstream>
-
 #include <pthread.h>
-#include <semaphore.h>
+
 using namespace std;
 #define max_size 1024
 
@@ -33,16 +31,6 @@ struct planet // 计算使用结构体，记录下body状态
 	{
 		mass = sx = sy = sz = x = y = z = 0;
 		fx = fy = fz = 0;
-	}
-	void operator=(planet &other)
-	{
-		mass = other.mass;
-		sx = other.sx;
-		sy = other.sy;
-		sz = other.sz;
-		x = other.x;
-		y = other.y;
-		z = other.z;
 	}
 };
 struct thread_set // pthread参数传递
@@ -85,7 +73,6 @@ void postion(planet &a)					// 根据当前body的收到总力和速度更新速
 
 void read(planet *array)				// 从文件中读取数据并且存放到合适的位置
 {
-	// planet t;
 	fstream fp;
 	fp.open("nbody.txt", ios::in);
 	if (fp.bad())
@@ -95,10 +82,8 @@ void read(planet *array)				// 从文件中读取数据并且存放到合适的�
 	for (int i = 0; i < max_size; i++)
 	{
 		fp >> array[i].mass >> array[i].x >> array[i].y >> array[i].z >> array[i].sx >> array[i].sy >> array[i].sz;
-		// print(array[i]);
 	}
 	fp.close();
-	// cout << 'y';
 }
 
 void write(planet *array, const char *file)			// 向目的文件写入计算结果
@@ -132,7 +117,7 @@ void parallel_stimulus1(unsigned int count, planet *array)	// openmp并行程序
 				speed_change(array[i], array[j]);
 			}
 		}
-		// #pragma omp parallel for num_threads(8) private(i) shared(array)
+#pragma omp parallel for num_threads(8) private(i) shared(array)
 		for (i = 0; i < max_size; i++)
 		{
 			postion(array[i]);
@@ -152,16 +137,14 @@ void *thread_pthread(void *argv)							// pthread的计算线程
 	}
 	else
 	{
-		n = (rank + 1) * max_size / 4;
+		n = (rank + 1) * max_size / 4;						// 如果下面修改了线程数量，这里也需要一并修改。
 	}
-	// cout << n<<' ';
+
 	for (int i = rank * max_size / 4; i < n; i++)
 	{
 		for (int j = i + 1; j <= max_size; j++)
 		{
-			// sem_wait(&sem);
 			speed_change(set.o[i], set.o[j]);
-			// sem_post(&sem);
 		}
 	}
 
@@ -169,11 +152,7 @@ void *thread_pthread(void *argv)							// pthread的计算线程
 }
 void parallel_stimulus2(unsigned int count, planet *array)		// pthread并行程序
 {
-	// sem_t sem;
-	// sem_init(&sem, 0, 1);
-
-	int num_of_thread = 4;
-
+	int num_of_thread = 4;						// 线程数量
 	thread_set *set = new thread_set[num_of_thread];
 
 	pthread_t *thread_handle = new pthread_t[num_of_thread];
@@ -202,8 +181,6 @@ void parallel_stimulus2(unsigned int count, planet *array)		// pthread并行程�
 
 void series_stimulus(unsigned int count, planet *array)				// 唯一串行程序
 {
-	// clock_t start, end;
-
 	while (count--)
 	{
 		// start = clock();
@@ -219,8 +196,6 @@ void series_stimulus(unsigned int count, planet *array)				// 唯一串行程序
 		{
 			postion(array[i]);
 		}
-		// end = clock();
-		// cout << (double)(end - start) / (CLOCKS_PER_SEC) << endl;
 	}
 }
 
