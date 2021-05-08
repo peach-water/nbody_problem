@@ -133,7 +133,7 @@ void *thread_pthread(void *argv)							// pthread的计算线程
 	
 	if (rank == 3)
 	{
-		n = max_size - 1;
+		n = max_size;
 	}
 	else
 	{
@@ -142,7 +142,7 @@ void *thread_pthread(void *argv)							// pthread的计算线程
 
 	for (int i = rank * max_size / 4; i < n; i++)
 	{
-		for (int j = i + 1; j <= max_size; j++)
+		for (int j = i + 1; j < max_size; j++)
 		{
 			speed_change(set.o[i], set.o[j]);
 		}
