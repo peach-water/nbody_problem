@@ -228,6 +228,6 @@ int main()
 	GET_TIME(start);
 	parallel_stimulus2(count, copy_planet);
 	GET_TIME(end)
-	cout << (double)(end - start) / CLOCKS_PER_SEC << endl;
+	cout << (double)(end - start) << endl;
 	// write(copy_planet, parallel2);
 }
